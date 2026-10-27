@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biometría Aplicada - Dashboard Corporativo</title>
+    <style>
+        :root {
+            --primary-orange: #FF5500;
+            --dark-bg: #111317;
+            --card-bg: #1a1d24;
+            --text-main: #FFFFFF;
+            --text-muted: #94A3B8;
+            --border-color: #2D3748;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 30px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--primary-orange);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 24px;
+            color: #fff;
+        }
+
+        .logo-text h1 {
+            font-size: 22px;
+            letter-spacing: 1px;
+            color: var(--text-main);
+        }
+
+        .logo-text span {
+            font-size: 13px;
+            color: var(--primary-orange);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .clock-container {
+            text-align: right;
+        }
+
+        #time {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary-orange);
+            letter-spacing: 1px;
+        }
+
+        #date {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: capitalize;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            flex: 1;
+        }
+
+        .main-column {
+            display: grid;
+            grid-template-rows: auto auto;
+            gap: 25px;
+        }
+
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-orange);
+        }
+
+        .card-title {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .card-value {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-top: 10px;
+        }
+
+        .banner-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .banner-card h3 {
+            color: var(--primary-orange);
+            margin-bottom: 10px;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+
+        .banner-card p {
+            font-size: 20px;
+            line-height: 1.5;
+            color: var(--text-main);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .side-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            flex: 1;
+        }
+
+        .side-box h3 {
+            font-size: 16px;
+            color: var(--primary-orange);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .side-box div {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-main);
+        }
+
+        /* Modal flotante de actualización (Presiona F2 para abrir) */
+        #admin-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--primary-orange);
+            width: 400px;
+        }
+        .modal-content h2 { color: var(--primary-orange); margin-bottom: 15px; font-size: 20px; }
+        .modal-content label { display: block; font-size: 13px; color: var(--text-muted); margin-top: 10px; }
+        .modal-content input, .modal-content select { width: 100%; padding: 10px; background: var(--dark-bg); border: 1px solid var(--border-color); color: #fff; border-radius: 6px; margin-top: 5px; }
+        .modal-content button { background: var(--primary-orange); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; }
+        .modal-content button.close-btn { background: #4a5568; margin-top: 5px; }
+        .hint-key { position: fixed; bottom: 10px; right: 10px; font-size: 11px; color: var(--text-muted); opacity: 0.5; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon">BA</div>
+            <div class="logo-text">
+                <h1>Biometría Aplicada</h1>
+                <span>Control de Acceso y Seguridad</span>
+            </div>
+        </div>
+        <div class="clock-container">
+            <div id="time">00:00:00</div>
+            <div id="date">Cargando fecha...</div>
+        </div>
+    </header>
+
+    <div class="dashboard-grid">
+        <div class="main-column">
+            <div class="kpi-row">
+                <div class="card">
+                    <div class="card-title">Proyectos / Ventas</div>
+                    <div class="card-value" id="val-ventas">--</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Eficiencia Operativa</div>
+                    <div class="card-value" id="val-eficiencia">--</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Casos de Soporte</div>
+                    <div class="card-value" id="val-casos">--</div>
+                </div>
+            </div>
+
+            <div class="banner-card">
+                <h3>Comunicado / Aviso General</h3>
+                <p id="val-comunicado">Sincronizando datos...</p>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="side-box">
+                <h3>Seguridad & Prevención</h3>
+                <div style="font-size: 32px; font-weight: bold; color: var(--primary-orange); margin-bottom: 10px;" id="val-dias">-- Días</div>
+                <p style="color: var(--text-muted); font-size: 14px;">Sin accidentes laborales con tiempo perdido.</p>
+            </div>
+
+            <div class="side-box">
+                <h3>Cumpleaños del Mes</h3>
+                <div id="val-cumpleanos">Cargando equipo...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel Oculto para ingresar datos (Presiona F2) -->
+    <div id="admin-modal">
+        <div class="modal-content">
+            <h2>Actualizar Datos</h2>
+            <label>Indicador a Modificar:</label>
+            <select id="input-key">
+                <option value="ventas">Proyectos / Ventas</option>
+                <option value="eficiencia">Eficiencia Operativa</option>
+                <option value="casos">Casos de Soporte</option>
+                <option value="dias">Días Sin Accidentes</option>
+                <option value="cumpleanos">Cumpleaños del Mes</option>
+                <option value="comunicado">Comunicado General</option>
+            </select>
+
+            <label>Nuevo Valor:</label>
+            <input type="text" id="input-value" placeholder="Ej. 95% o Nuevo comunicado...">
+
+            <button onclick="sendDataToSheet()">Guardar y Actualizar</button>
+            <button class="close-btn" onclick="toggleModal(false)">Cerrar [F2]</button>
+        </div>
+    </div>
+
+    <div class="hint-key">Presiona [F2] para actualizar datos</div>
+
+    <script>
+        // PEGA AQUÍ LA URL DE TU WEB APP DE GOOGLE APPS SCRIPT
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz1u4hewr2GyZZ8ALKl294l7FKaQFB5ZOSEhDf9Q1TDLkFxdCke0QNO_UmENTwnwOTfhQ/exec';
+
+        // Reloj
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('time').innerText = now.toLocaleTimeString('es-CL');
+            document.getElementById('date').innerText = now.toLocaleDateString('es-CL', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Cargar datos desde Google Sheets
+        async function updateDashboard() {
+            if (WEB_APP_URL.includes('PEGAR_AQUI')) return;
+
+            try {
+                const response = await fetch(WEB_APP_URL + `?t=${Date.now()}`);
+                const dataMap = await response.json();
+
+                // Mapeo automático a los elementos visuales
+                Object.keys(dataMap).forEach(key => {
+                    if (key.includes('venta')) document.getElementById('val-ventas').innerText = dataMap[key];
+                    if (key.includes('eficiencia')) document.getElementById('val-eficiencia').innerText = dataMap[key];
+                    if (key.includes('caso') || key.includes('soporte')) document.getElementById('val-casos').innerText = dataMap[key];
+                    if (key.includes('dia') || key.includes('accident')) document.getElementById('val-dias').innerText = dataMap[key] + ' Días';
+                    if (key.includes('cumplea')) document.getElementById('val-cumpleanos').innerText = dataMap[key];
+                    if (key.includes('comunicado') || key.includes('aviso')) document.getElementById('val-comunicado').innerText = dataMap[key];
+                });
+
+            } catch (err) {
+                console.error('Error al sincronizar datos:', err);
+            }
+        }
+
+        // Enviar nuevos datos al Google Sheet
+        async function sendDataToSheet() {
+            const key = document.getElementById('input-key').value;
+            const value = document.getElementById('input-value').value;
+
+            if (!value) {
+                alert('Por favor ingresa un valor.');
+                return;
+            }
+
+            try {
+                document.querySelector('#admin-modal button').innerText = 'Guardando...';
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key, value })
+                });
+
+                alert('¡Actualizado con éxito!');
+                document.getElementById('input-value').value = '';
+                toggleModal(false);
+                updateDashboard(); // Refrescar pantalla de inmediato
+            } catch (err) {
+                console.error('Error al enviar:', err);
+                alert('Hubo un error al guardar.');
+            } finally {
+                document.querySelector('#admin-modal button').innerText = 'Guardar y Actualizar';
+            }
+        }
+
+        // Control del modal con la tecla F2
+        function toggleModelVisible(show) {
+            document.getElementById('admin-modal').style.display = show ? 'flex' : 'none';
+        }
+        window.toggleModal = toggleModelVisible;
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'F2') {
+                e.preventDefault();
+                const modal = document.getElementById('admin-modal');
+                modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+            }
+        });
+
+        updateDashboard();
+        setInterval(updateDashboard, 10000); // Se actualiza automáticamente cada 10 segundos en Anthias
+    </script>
+</body>
+</html>
